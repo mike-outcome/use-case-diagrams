@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lux Living — UC1 Lease Comparison Process Map</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f5f7;
+    color: #3d4551;
+    padding: 40px 20px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 32px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1f36;
+    margin-bottom: 4px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  /* Shared workflow banner */
+  .shared-workflow {
+    background: #1a1f36;
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .shared-workflow::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 100%;
+    background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .shared-workflow h2 {
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #a5b4fc;
+    margin-bottom: 16px;
+  }
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #e0e7ff;
+    text-align: center;
+    min-width: 140px;
+  }
+  .flow-step strong {
+    display: block;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .flow-arrow {
+    font-size: 20px;
+    color: #6366f1;
+    padding: 0 10px;
+    flex-shrink: 0;
+  }
+  .shared-workflow .inbox {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #a5b4fc;
+  }
+  .shared-workflow .inbox code {
+    background: rgba(255,255,255,0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: #c7d2fe;
+  }
+  .qb-workflow {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  }
+  .qb-workflow::before {
+    background: linear-gradient(135deg, rgba(167,139,250,0.15) 0%, transparent 70%);
+  }
+  .qb-workflow h2 {
+    color: #c4b5fd;
+  }
+  .qb-workflow .flow-arrow {
+    color: #8b5cf6;
+  }
+  .qb-workflow .inbox {
+    color: #c4b5fd;
+  }
+  .qb-workflow .inbox code {
+    color: #ddd6fe;
+  }
+
+  /* System sections */
+  .system-section {
+    margin-bottom: 32px;
+  }
+  .system-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .system-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .system-icon.yardi { background: #4f46e5; }
+  .system-icon.aptly { background: #0891b2; }
+  .system-icon.appfolio { background: #d97706; }
+  .system-icon.realpage { background: #dc2626; }
+  .system-icon.unknown { background: #9ca3af; }
+
+  .system-header-text h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1f36;
+  }
+  .system-header-text .system-desc {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  /* How it works box */
+  .how-it-works {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+  .how-it-works .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9ca3af;
+    margin-bottom: 6px;
+  }
+  .how-it-works code {
+    background: #f3f4f6;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: #4f46e5;
+  }
+
+  /* Property cards */
+  .property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+  }
+  .property-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+  .property-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  }
+  .card-header {
+    padding: 14px 18px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .card-header h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1f36;
+  }
+  .card-body {
+    padding: 14px 18px 16px;
+  }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #f9fafb;
+  }
+  .card-row:last-child {
+    border-bottom: none;
+  }
+  .card-row .label {
+    color: #9ca3af;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+  .card-row .value {
+    color: #374151;
+    text-align: right;
+    font-weight: 500;
+  }
+  .card-row .value code {
+    background: #f3f4f6;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: #4f46e5;
+  }
+  .card-status {
+    padding: 10px 18px 14px;
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.5;
+    border-top: 1px solid #f3f4f6;
+  }
+  .card-status strong {
+    color: #374151;
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .badge-live { background: #ecfdf5; color: #059669; }
+  .badge-issue { background: #fef3c7; color: #b45309; }
+  .badge-updated { background: #eff6ff; color: #2563eb; }
+  .badge-new { background: #f5f3ff; color: #7c3aed; }
+  .badge-pending { background: #f3f4f6; color: #6b7280; }
+  .badge-none { background: #fef2f2; color: #dc2626; }
+
+  /* Summary table */
+  .summary {
+    margin-top: 8px;
+  }
+  .summary table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .summary thead th {
+    background: #1a1f36;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 12px 16px;
+    text-align: left;
+  }
+  .summary tbody td {
+    padding: 11px 16px;
+    font-size: 13px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .summary tbody tr:last-child td { border-bottom: none; }
+  .summary tbody tr:hover { background: #f9fafb; }
+  .summary td:first-child { font-weight: 600; color: #1a1f36; }
+
+  /* Section label */
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+    margin-top: 40px;
+  }
+
+  /* Footnote */
+  .footnote {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.6;
+  }
+  .footnote strong { color: #6b7280; }
+
+  /* Email thread callout */
+  .callout {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.6;
+  }
+  .callout h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #b45309;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .callout ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .callout li {
+    margin-bottom: 4px;
+  }
+  .callout code {
+    background: rgba(180,83,9,0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Lux Living — UC1 Lease to Database Comparison</h1>
+    <div class="subtitle">Process map by property system &middot; 11 properties &middot; Updated April 3, 2026</div>
+  </div>
+
+  <!-- ═══════════════════════════ SUMMARY ═══════════════════════════ -->
+  <div class="section-label" style="margin-top:0;">Status Summary</div>
+  <div class="summary" style="margin-bottom:36px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>System</th>
+          <th>Properties</th>
+          <th>Responsible Party</th>
+          <th>Action Needed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-issue">Outcome-Side Issue</span></td>
+          <td>Yardi</td>
+          <td>The Leo, Wicker Park Connection, The Saint Grand</td>
+          <td>Outcome Team</td>
+          <td>Investigate why Saint Grand lease (3/30) isn't in dashboard. Verify all Yardi intake on Outcome side.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-new">New Intake Path</span></td>
+          <td>AppFolio</td>
+          <td>West Loop, Evanston / Maeve on Ridge</td>
+          <td>Outcome Team</td>
+          <td>Whitelist <code>notify@quickbase.com</code>. Validate QB email format with pipeline.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-new">New Intake Path</span></td>
+          <td>RealPage</td>
+          <td>3Eleven</td>
+          <td>Outcome Team</td>
+          <td>Same — whitelist + format validation.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-updated">Auto-Forwards Needed</span></td>
+          <td>Aptly</td>
+          <td>Seven 10 West, Norweta, No. 508</td>
+          <td>Luxury Living</td>
+          <td>Liz to investigate why auto-forwards aren't working.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-pending">Not Launched</span></td>
+          <td>Yardi / TBD</td>
+          <td>111 Point, 370 Morgan, 1221 Washington</td>
+          <td>Outcome Team</td>
+          <td>Launch pending.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Shared workflow -->
+  <div class="shared-workflow">
+    <h2>Shared Workflow — All Properties</h2>
+    <div class="flow-steps">
+      <div class="flow-step"><strong>Lease Arrives</strong>Email to Outcome inbox</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>Extract</strong>Parse PDF lease fields</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>Compare</strong>Match vs. Ascent / QuickBase</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>Output</strong>Comparison email to property inbox</div>
+    </div>
+    <div class="inbox">Outcome intake address: <code>luxuryliving@mail.outcomelabs.ai</code></div>
+  </div>
+
+  <!-- QB notification workflow -->
+  <div class="shared-workflow qb-workflow">
+    <h2>New Intake Path — QuickBase Notification (AppFolio &amp; RealPage Properties)</h2>
+    <div class="flow-steps">
+      <div class="flow-step"><strong>Lease Executed</strong>In AppFolio / RealPage</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>QB Notification</strong>Email from notify@quickbase.com</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>Payload</strong>Lease PDF + Ascent lease term data</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>Outcome Inbox</strong>Receives &amp; processes</div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step"><strong>Output</strong>Comparison email to property inbox</div>
+    </div>
+    <div class="inbox">Requires whitelisting: <code>notify@quickbase.com</code></div>
+  </div>
+
+  <!-- ═══════════════════════════ YARDI ═══════════════════════════ -->
+  <div class="system-section">
+    <div class="system-header">
+      <div class="system-icon yardi">Y</div>
+      <div class="system-header-text">
+        <h3>Yardi (RentCafe)</h3>
+        <div class="system-desc">4 properties &middot; Cagan &amp; Cushman & Wakefield</div>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <div class="label">How intake works</div>
+      Yardi sends an automated <strong>"Lease Agreement Executed"</strong> email from <code>no-reply@rentcafe.com</code> to the property inbox when the PM signs the lease. A Gmail auto-forward rule on the property inbox sends it to <code>luxuryliving@mail.outcomelabs.ai</code>.
+    </div>
+
+    <div class="property-grid">
+      <!-- The Leo -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>The Leo</h4>
+          <span class="badge badge-live">Live</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Cagan</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Lease Agreement Executed"</code></span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward from property inbox</span></div>
+        </div>
+        <div class="card-status">Forward confirmed working on LL side. Pending Outcome-side receipt verification.</div>
+      </div>
+
+      <!-- Wicker Park Connection -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>Wicker Park Connection</h4>
+          <span class="badge badge-live">Live</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Cagan</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Congratulations &amp; Welcome Home"</code></span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward from property inbox</span></div>
+        </div>
+        <div class="card-status">Forward rules active. Pending Outcome-side receipt confirmation.</div>
+      </div>
+
+      <!-- The Saint Grand -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>The Saint Grand</h4>
+          <span class="badge badge-issue">Issue</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">C&amp;W</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Lease Agreement Executed"</code></span></div>
+          <div class="card-row"><span class="label">Property Inbox</span><span class="value"><code>saintgrand@luxurylivingchicago.com</code></span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward from property inbox</span></div>
+        </div>
+        <div class="card-status"><strong>Issue:</strong> Lease forwarded 3/30, confirmed in LL admin log, but not appearing in Outcome dashboard. No QA email returned. Outcome-side investigation needed.</div>
+      </div>
+
+      <!-- 111 Point -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>111 Point</h4>
+          <span class="badge badge-pending">Not Launched</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">C&amp;W</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Lease Agreement Executed"</code> (expected)</span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward configured</span></div>
+        </div>
+        <div class="card-status">Forward rule configured but property not yet launched.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ APTLY ═══════════════════════════ -->
+  <div class="system-section">
+    <div class="system-header">
+      <div class="system-icon aptly">A</div>
+      <div class="system-header-text">
+        <h3>Aptly</h3>
+        <div class="system-desc">3 properties &middot; Stabilized buildings, low volume</div>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <div class="label">How intake works</div>
+      Aptly sends a <strong>"Document complete"</strong> notification to the property's lease download email recipient when signing finishes. A Gmail auto-forward rule sends it to <code>luxuryliving@mail.outcomelabs.ai</code>. <strong>Gmail filters were updated by Liz on 4/2</strong> after discovering forwards were not firing.
+    </div>
+
+    <div class="property-grid">
+      <!-- Seven 10 West -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>Seven 10 West</h4>
+          <span class="badge badge-updated">Auto-Forwards Needed</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Outlook</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Document complete"</code></span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward from property inbox</span></div>
+        </div>
+        <div class="card-status">Aptly forwards were <strong>not firing</strong>. Liz updated Gmail filters 4/2. Stabilized building — awaiting next live lease to confirm.</div>
+      </div>
+
+      <!-- Norweta -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>Norweta</h4>
+          <span class="badge badge-updated">Auto-Forwards Needed</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Broder</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Document complete"</code></span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward from property inbox</span></div>
+        </div>
+        <div class="card-status">Filters updated 4/2. Stabilized building — awaiting live confirmation.</div>
+      </div>
+
+      <!-- No. 508 -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>No. 508</h4>
+          <span class="badge badge-updated">Auto-Forwards Needed</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Broder</span></div>
+          <div class="card-row"><span class="label">Trigger Subject</span><span class="value"><code>"Document complete"</code></span></div>
+          <div class="card-row"><span class="label">Forward</span><span class="value">Auto-forward from property inbox</span></div>
+        </div>
+        <div class="card-status">Filters updated 4/2. Stabilized building — awaiting live confirmation.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ APPFOLIO ═══════════════════════════ -->
+  <div class="system-section">
+    <div class="system-header">
+      <div class="system-icon appfolio">AF</div>
+      <div class="system-header-text">
+        <h3>AppFolio (via QuickBase Notification)</h3>
+        <div class="system-desc">2 properties &middot; Maeve management</div>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <div class="label">How intake works</div>
+      AppFolio has <strong>no automated lease notification</strong>. Liz set up a <strong>QuickBase notification</strong> as the trigger instead. When a lease is executed, QB sends an email from <code>notify@quickbase.com</code> with the lease attached + Ascent lease term form data. This is a <strong>different intake path</strong> than the direct lease forwards used by Yardi/Aptly properties.
+    </div>
+
+    <div class="property-grid">
+      <!-- West Loop -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>West Loop</h4>
+          <span class="badge badge-new">New Intake Path</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Maeve</span></div>
+          <div class="card-row"><span class="label">Trigger</span><span class="value">QB notification email</span></div>
+          <div class="card-row"><span class="label">Sender</span><span class="value"><code>notify@quickbase.com</code></span></div>
+          <div class="card-row"><span class="label">Payload</span><span class="value">Lease PDF + Ascent data</span></div>
+        </div>
+        <div class="card-status"><strong>Action needed:</strong> Outcome must whitelist <code>notify@quickbase.com</code> and validate QB email format works with pipeline.</div>
+      </div>
+
+      <!-- Evanston / Maeve on Ridge -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>Evanston / Maeve on Ridge</h4>
+          <span class="badge badge-new">New Intake Path</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Maeve</span></div>
+          <div class="card-row"><span class="label">Trigger</span><span class="value">QB notification email</span></div>
+          <div class="card-row"><span class="label">Sender</span><span class="value"><code>notify@quickbase.com</code></span></div>
+          <div class="card-row"><span class="label">Payload</span><span class="value">Lease PDF + Ascent data</span></div>
+        </div>
+        <div class="card-status"><strong>Action needed:</strong> Same as West Loop — whitelist + format validation.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ REALPAGE ═══════════════════════════ -->
+  <div class="system-section">
+    <div class="system-header">
+      <div class="system-icon realpage">RP</div>
+      <div class="system-header-text">
+        <h3>RealPage (via QuickBase Notification)</h3>
+        <div class="system-desc">1 property &middot; Magellan management</div>
+      </div>
+    </div>
+
+    <div class="how-it-works">
+      <div class="label">How intake works</div>
+      RealPage has <strong>no reliable automated lease notification</strong> (PM updates are inconsistent). Liz set up the same <strong>QuickBase notification</strong> workaround. Email from <code>notify@quickbase.com</code> with lease + Ascent data attached.
+    </div>
+
+    <div class="property-grid">
+      <!-- 3Eleven -->
+      <div class="property-card">
+        <div class="card-header">
+          <h4>3Eleven</h4>
+          <span class="badge badge-new">New Intake Path</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Magellan</span></div>
+          <div class="card-row"><span class="label">Trigger</span><span class="value">QB notification email</span></div>
+          <div class="card-row"><span class="label">Sender</span><span class="value"><code>notify@quickbase.com</code></span></div>
+          <div class="card-row"><span class="label">Payload</span><span class="value">Lease PDF + Ascent data</span></div>
+        </div>
+        <div class="card-status"><strong>Action needed:</strong> Same as AppFolio properties — whitelist <code>notify@quickbase.com</code> + validate format.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ UNKNOWN ═══════════════════════════ -->
+  <div class="system-section">
+    <div class="system-header">
+      <div class="system-icon unknown">?</div>
+      <div class="system-header-text">
+        <h3>Unknown / No Data</h3>
+        <div class="system-desc">2 properties &middot; No system or mgmt team assigned</div>
+      </div>
+    </div>
+
+    <div class="property-grid">
+      <div class="property-card">
+        <div class="card-header">
+          <h4>370 Morgan</h4>
+          <span class="badge badge-none">No Data</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">System</span><span class="value">Unknown</span></div>
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Unknown</span></div>
+        </div>
+        <div class="card-status">No system, management team, or workflow data in the tracker. Needs info from Liz.</div>
+      </div>
+
+      <div class="property-card">
+        <div class="card-header">
+          <h4>1221 Washington</h4>
+          <span class="badge badge-none">No Data</span>
+        </div>
+        <div class="card-body">
+          <div class="card-row"><span class="label">System</span><span class="value">Unknown</span></div>
+          <div class="card-row"><span class="label">Mgmt Team</span><span class="value">Unknown</span></div>
+        </div>
+        <div class="card-status">No system, management team, or workflow data in the tracker. Needs info from Liz.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footnote -->
+  <div class="footnote">
+    <strong>Sources:</strong> Internal PRD (Notion: Lux Living - Lease to Database Comparison - v1) &middot; Google Sheet: "Exe Lease workflow 2/4/26" tab &middot; Email threads: "Need an executive update" and "Fwd: Lease Agreement Executed" (April 1-2, 2026).<br>
+    <strong>Mgmt Team</strong> values are pulled from column 3 of the "Exe Lease workflow 2/4/26" tab. Note: Seven 10 West shows "Outlook" — this may refer to the email system rather than the management company.
+  </div>
+
+</div>
+</body>
+</html>

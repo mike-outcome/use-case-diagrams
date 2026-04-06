@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBRE Host — Master Data File &amp; Presentation Converter Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .diagram {
+    width: 1080px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .section-label {
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 28px;
+    width: 100%;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+  }
+  .box {
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+    min-width: 180px;
+    max-width: 310px;
+    flex: 1;
+  }
+  .box h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .box p {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+  .wide { min-width: 420px; max-width: 600px; }
+  .full { min-width: 700px; max-width: 900px; }
+  code { background: #ffffff22; padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+  .trigger { background: #1a5c3a; color: #fff; }
+  .input { background: #1b3a5c; color: #fff; }
+  .process { background: #2c4a6e; color: #fff; }
+  .output { background: #3a3a3a; color: #fff; }
+  .delivery { background: #5c3a1b; color: #fff; }
+  .file-list {
+    margin-top: 6px;
+    text-align: left;
+    font-size: 10.5px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .tag-key { background: #4ae68a33; color: #4ae68a; }
+  .connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 100%;
+  }
+  .connector-single { width: 2px; height: 28px; background: #555; }
+  .connector-merge {
+    position: relative;
+    width: 500px;
+    height: 28px;
+  }
+  .connector-merge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-3 {
+    position: relative;
+    width: 700px;
+    height: 28px;
+  }
+  .connector-split-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    width: 70%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+  .connector-merge-3 {
+    position: relative;
+    width: 700px;
+    height: 28px;
+  }
+  .connector-merge-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    width: 70%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge-3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .csv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .csv-item {
+    background: #ffffff12;
+    border: 1px solid #ffffff1a;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 9.5px;
+    color: #ccc;
+    text-align: left;
+  }
+  .csv-item .csv-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 10px;
+  }
+  .csv-item .csv-domain {
+    color: #888;
+    font-size: 8.5px;
+    margin-top: 2px;
+  }
+  .stage-header {
+    color: #888;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 24px;
+    width: 100%;
+    text-align: center;
+  }
+  .stage-num {
+    color: #fff;
+    background: #ffffff22;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    font-size: 9px;
+  }
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <div class="title">CBRE Host — Master Data File &amp; Presentation Converter</div>
+  <div class="subtitle">Weekly VTS Looker property reports consolidated into a single Master Data File per CBRE specifications</div>
+
+  <!-- TRIGGER -->
+  <div class="section-label">Trigger</div>
+  <div class="row">
+    <div class="box trigger wide">
+      <h3>Weekly Email Delivery (Sundays)</h3>
+      <p>Zach Targos (CBRE) sends zipped CSV files via email. Files arrive in staggered emails (not all at once). The pipeline buffers until all 6 CSVs are received before processing.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <!-- INPUTS -->
+  <div class="section-label">Inputs — 6 Property-Level CSVs (per delivery)</div>
+  <div class="row">
+    <div class="box input full">
+      <h3>VTS Looker Report Exports</h3>
+      <p>6 CSVs per week across 5 dashboard domains. Delivered as zip attachments. Joined by <code>channel name</code> <span class="tag tag-key">common key</span></p>
+      <div class="csv-grid">
+        <div class="csv-item">
+          <div class="csv-name">content_analytics_by_property</div>
+          <div class="csv-domain">cbre_content_info</div>
+        </div>
+        <div class="csv-item">
+          <div class="csv-name">content_created_by_property</div>
+          <div class="csv-domain">cbre_content_info</div>
+        </div>
+        <div class="csv-item">
+          <div class="csv-name">access_scans_by_property</div>
+          <div class="csv-domain">cbre_mobile_access_info</div>
+        </div>
+        <div class="csv-item">
+          <div class="csv-name">user_activity_metrics_by_property</div>
+          <div class="csv-domain">cbre_property_engagement_info</div>
+        </div>
+        <div class="csv-item">
+          <div class="csv-name">property_info</div>
+          <div class="csv-domain">cbre_property_info</div>
+        </div>
+        <div class="csv-item">
+          <div class="csv-name">work_orders_by_property</div>
+          <div class="csv-domain">cbre_work_order_info</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <!-- TRANSFORMATION -->
+  <div class="section-label" style="border: 1px solid #333; border-radius: 6px; padding: 6px 16px; background: #1a1a1a;">Outcome Automation Pipeline (n8n)</div>
+
+  <div class="stage-header"><span class="stage-num">1</span> Email Intake &amp; Extraction</div>
+  <div class="row">
+    <div class="box process wide">
+      <h3>Receive &amp; Buffer</h3>
+      <p>n8n monitors inbox for emails from CBRE with zip attachments. Extracts CSVs from each zip. Buffers across staggered emails. Validates all 6 expected filenames are present before triggering the merge.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="stage-header"><span class="stage-num">2</span> Merge &amp; Format</div>
+  <div class="row">
+    <div class="box process wide">
+      <h3>Join by Channel Name &amp; Apply CBRE Specs</h3>
+      <p>Read all 6 CSVs. Join on <code>channel name</code> (VTS property identifier) to produce a single merged dataset with all metrics per property. Apply CBRE column naming, ordering, number formatting, and date formatting. Output as .xlsx with a "Merge" tab.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="stage-header"><span class="stage-num">3</span> Historical Append</div>
+  <div class="row">
+    <div class="box process wide">
+      <h3>Append to Cumulative YTD Dataset</h3>
+      <p>Tag current week's data with the delivery date. Append to the running historical dataset. Supports time-range queries: weekly, monthly, quarterly, annually, all-time. Interim file-based storage (v1). Database integration deferred to v2.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-3"></div></div>
+
+  <!-- OUTPUTS -->
+  <div class="section-label">Outputs — Per Delivery Cycle</div>
+  <div class="row">
+    <div class="box output">
+      <h3>Weekly Master Data File</h3>
+      <p>Single .xlsx with "Merge" tab consolidating all 6 data sources by channel name per CBRE formatting specs</p>
+      <div class="file-list">
+        Reference format:<br>
+        <code>25 June Total.xlsx</code>
+      </div>
+    </div>
+    <div class="box output">
+      <h3>Historical Cumulative YTD</h3>
+      <p>Running dataset of all weekly values for each channel across all metrics</p>
+      <div class="file-list">
+        Reference format:<br>
+        <code>Q1 and Q2 25 Totals.xlsx</code>
+      </div>
+    </div>
+    <div class="box output">
+      <h3>Dashboard / Presentation Views</h3>
+      <p>Replications of CBRE's 5 Looker dashboards for stakeholder distribution</p>
+      <div class="file-list">
+        Content, Mobile Access, Engagement, Property Info, Work Orders
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge-3"></div></div>
+
+  <!-- DELIVERY -->
+  <div class="section-label">Delivery</div>
+  <div class="row">
+    <div class="box delivery wide">
+      <h3>Email to CBRE Host Team</h3>
+      <p>Completed Merge file and cumulative report delivered via email to designated CBRE recipients. Replaces manual weekly data merging across multiple CSV exports.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top: 28px; width: 100%; border-top: 1px solid #333; padding-top: 20px;">
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">V1 (Complete)</strong><br><br>
+        n8n pipeline: email intake &rarr; extract CSVs from zip &rarr; buffer for all 6 &rarr; merge by channel name &rarr; format per CBRE spec &rarr; append to historical
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">V2 (Deferred)</strong><br><br>
+        Database-backed storage replacing file-based interim.<br>
+        S3 integration (credentials cleared, access not provisioned).<br>
+        Platform-level data (62 CSVs).
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Status</strong><br><br>
+        V1 pipeline built &amp; demonstrated (Aug-Sept 2025).<br>
+        Resuming after Angus-to-VTS contract closes.<br>
+        <strong style="color: #f5a623;">On Hold</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

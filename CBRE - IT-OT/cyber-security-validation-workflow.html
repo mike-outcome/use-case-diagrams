@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Security Report — Validation Workflow</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background: #121212;
+    color: #ffffff;
+    min-height: 100vh;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 50px 40px 80px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 60px;
+  }
+
+  .title {
+    font-size: 42px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.5);
+    margin-top: 8px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Section labels */
+  .section-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 20px;
+  }
+
+  /* Blocks */
+  .block {
+    background: #1a5c2e;
+    border-radius: 12px;
+    padding: 28px 32px;
+    text-align: center;
+  }
+
+  .block-blue {
+    background: #1a3d6e;
+    border-radius: 12px;
+    padding: 28px 32px;
+    text-align: center;
+  }
+
+  .block-red {
+    background: #6e1a1a;
+    border-radius: 12px;
+    padding: 22px 26px;
+    text-align: center;
+  }
+
+  .block-amber {
+    background: #5c4a1a;
+    border-radius: 12px;
+    padding: 22px 26px;
+    text-align: center;
+  }
+
+  .block-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  .block-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+  }
+
+  .block-detail {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.5;
+    margin-top: 8px;
+  }
+
+  .block-now {
+    font-size: 11.5px;
+    line-height: 1.5;
+    margin-top: 12px;
+    text-align: left;
+  }
+
+  .block-now .label-now {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+
+  .block-now .label-target {
+    color: #4ade80;
+    font-weight: 700;
+  }
+
+  .block-now .text {
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* Connector lines */
+  .connector {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .vline {
+    width: 2px;
+    background: rgba(255,255,255,0.15);
+    height: 40px;
+  }
+
+  .vline-long {
+    width: 2px;
+    background: rgba(255,255,255,0.15);
+    height: 60px;
+  }
+
+  /* Split row */
+  .split-row {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .split-row > * {
+    flex: 1;
+  }
+
+  /* Validation section */
+  .validation-section {
+    margin-bottom: 0;
+  }
+
+  .validation-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .validation-main {
+    flex: 1;
+  }
+
+  .validation-fail {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+  }
+
+  /* Horizontal connector from block to fail */
+  .branch-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .hline {
+    height: 2px;
+    background: rgba(255,255,255,0.15);
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  .hline-dashed {
+    height: 2px;
+    border-top: 2px dashed rgba(248,113,113,0.5);
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  /* Pass/Fail labels */
+  .pass-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #4ade80;
+    letter-spacing: 2px;
+    text-align: center;
+    padding: 6px 0;
+  }
+
+  .fail-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #f87171;
+    letter-spacing: 2px;
+    padding: 6px 12px;
+  }
+
+  /* Checklist inside blocks */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 14px;
+    text-align: left;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .check-box {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid rgba(74,222,128,0.5);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* Layer badge inside block */
+  .layer-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #4ade80;
+    background: rgba(74,222,128,0.12);
+    border: 1px solid rgba(74,222,128,0.3);
+    border-radius: 12px;
+    padding: 3px 12px;
+    margin-bottom: 10px;
+  }
+
+  .layer-tag-amber {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #fbbf24;
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 12px;
+    padding: 3px 12px;
+    margin-bottom: 10px;
+  }
+
+  /* Code inline */
+  .code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    background: rgba(0,0,0,0.3);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Two-col data blocks */
+  .data-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 0;
+  }
+
+  .data-row > * {
+    flex: 1;
+  }
+
+  /* Fork connector SVG */
+  .fork-down {
+    display: flex;
+    justify-content: center;
+  }
+
+  .fork-svg {
+    display: block;
+  }
+
+  /* Outcome section with fail branch */
+  .gate-section {
+    position: relative;
+  }
+
+  .gate-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .gate-main {
+    flex: 1;
+    max-width: 580px;
+  }
+
+  .gate-branch {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-top: 50px;
+  }
+
+  .gate-fail-block {
+    width: 200px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="title">Validation Framework</div>
+      <div class="subtitle">Cyber Security Report — 15-Building Rollout</div>
+    </div>
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+        <circle cx="18" cy="24" r="13" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" fill="none"/>
+        <circle cx="30" cy="24" r="13" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" fill="none"/>
+      </svg>
+      <span class="logo-text">OUTCOME</span>
+    </div>
+  </div>
+
+  <!-- INPUT SECTION -->
+  <div class="section-label">INPUT</div>
+
+  <div class="block">
+    <div class="block-title">Armis Export (.zip)</div>
+    <div class="block-desc">Each building sends a .zip containing 2 CSVs weekly<br>Vulnerability Report (~2,300 rows) + Related Devices (~28,600 rows)</div>
+    <div class="block-now">
+      <div><span class="label-now">Now:</span> <span class="text">Sent to Aryan's email, manually triggered. 1 building (2MW).</span></div>
+      <div><span class="label-target">Target:</span> <span class="text">Sent directly to <span class="code">cbre_securityreport@mail.outcomelabs.ai</span> — 15 buildings, auto-processed.</span></div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="vline-long"></div></div>
+
+  <!-- LAYER 1: SCHEMA VALIDATION -->
+  <div class="section-label">LAYER 1 — SCHEMA VALIDATION</div>
+
+  <div class="gate-section">
+    <div class="gate-content">
+      <div class="gate-main">
+        <div class="block">
+          <div class="layer-tag">LAYER 1</div>
+          <div class="block-title">Input Schema Validation</div>
+          <div class="block-desc">Validate structure before processing. Checks run on receipt — deviations block the pipeline.</div>
+          <div class="checklist">
+            <div class="check-item"><div class="check-box"></div>Zip contains exactly 2 CSVs</div>
+            <div class="check-item"><div class="check-box"></div>Required columns present (presence-based, not count-based)</div>
+            <div class="check-item"><div class="check-box"></div>Site column (col 33) populated with recognized building ID</div>
+            <div class="check-item"><div class="check-box"></div>Boundaries column values match building's vendor map</div>
+            <div class="check-item"><div class="check-box"></div>Risk column uses expected values (Critical / High / Medium / Low)</div>
+          </div>
+          <div class="block-now">
+            <div><span class="label-now">Now:</span> <span class="text">No automated schema validation. CSV identified by filename keywords (already failed once, Mar 23).</span></div>
+            <div><span class="label-target">Target:</span> <span class="text">Automated first-run validation per building. CSV identified by first column header value.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gate-branch">
+        <div class="hline-dashed"></div>
+        <div class="fail-label">FAIL</div>
+        <div class="hline-dashed"></div>
+        <div class="gate-fail-block">
+          <div class="block-red">
+            <div class="block-title" style="font-size: 15px; color: #fca5a5;">Block Processing</div>
+            <div class="block-desc" style="font-size: 11px; color: rgba(252,165,165,0.6);">Alert dev team + Bhruti.<br>Data not processed until schema deviation is resolved.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="vline" style="height: 16px;"></div>
+      <div class="pass-label">PASS</div>
+      <div class="vline" style="height: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- PROCESSING SECTION -->
+  <div class="section-label">PROCESSING</div>
+
+  <div class="block">
+    <div class="block-title">Pipeline Processing</div>
+    <div class="block-desc">
+      Join Vulnerability Report + Related Devices on CVE UID<br>
+      Filter: Open status, Critical/High/Medium risk, 60-day window<br>
+      Split by vendor boundary using building's vendor map<br>
+      Generate Vendor Workbooks (2 tabs each)
+    </div>
+    <div class="block-detail">
+      Building identified from Site column (col 33) in Related Devices CSV.<br>
+      Vendor map selected automatically. Multi-boundary devices resolved via IP prefix rules.
+    </div>
+  </div>
+
+  <div class="connector"><div class="vline-long"></div></div>
+
+  <!-- LAYER 3: OUTPUT VALIDATION -->
+  <div class="section-label">LAYER 3 — OUTPUT VALIDATION</div>
+
+  <div class="gate-section">
+    <div class="gate-content">
+      <div class="gate-main">
+        <div class="block">
+          <div class="layer-tag">LAYER 3</div>
+          <div class="block-title">Output Accuracy Validation</div>
+          <div class="block-desc">Compare pipeline output against the input CSV before delivery.<br>The Armis CSV is the source of truth — not the Armis UI.</div>
+          <div class="checklist">
+            <div class="check-item"><div class="check-box"></div>Device counts per vendor match input CSV (after filtering)</div>
+            <div class="check-item"><div class="check-box"></div>CVE counts per vendor match input CSV (catches dropped vulnerabilities)</div>
+            <div class="check-item"><div class="check-box"></div>No Low-risk devices appear in output (risk filter check)</div>
+            <div class="check-item"><div class="check-box"></div>Boundary isolation — no device in wrong vendor report</div>
+          </div>
+          <div class="block-now">
+            <div><span class="label-now">Now:</span> <span class="text">Bhruti manually compares against Armis UI. Has caught 2 errors. Does not scale to 15 buildings x 19 vendors.</span></div>
+            <div><span class="label-target">Target:</span> <span class="text">Automated per-building validation summary generated before every delivery. Discrepancies flagged.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gate-branch">
+        <div class="hline-dashed"></div>
+        <div class="fail-label">FAIL</div>
+        <div class="hline-dashed"></div>
+        <div class="gate-fail-block">
+          <div class="block-red">
+            <div class="block-title" style="font-size: 15px; color: #fca5a5;">Hold Delivery</div>
+            <div class="block-desc" style="font-size: 11px; color: rgba(252,165,165,0.6);">Flag discrepancy in validation summary.<br>Review before sending to CBRE.<br>Hard block vs. warning TBD with Bhruti.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="vline" style="height: 16px;"></div>
+      <div class="pass-label">PASS</div>
+      <div class="vline" style="height: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- VALIDATION SUMMARY -->
+  <div class="section-label">VALIDATION SUMMARY</div>
+
+  <div class="block-blue">
+    <div class="block-title">Per-Building Validation Report</div>
+    <div class="block-desc">Generated after every pipeline run, before delivery</div>
+    <div style="margin-top: 16px; overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.15);">
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">Building</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">Vendor</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">Devices (Exp)</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">Devices (Out)</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">CVEs (Exp)</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">CVEs (Out)</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">Low-Risk Leak</th>
+            <th style="padding: 6px 8px; color: rgba(255,255,255,0.5); font-weight: 600;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">2MW</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">Traxon Lighting</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">6</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">6</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">18</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">18</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">0</td>
+            <td style="padding: 6px 8px; color: #4ade80; font-weight: 700;">PASS</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">2MW</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">Kastle Sec. Surv.</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">135</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">135</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">842</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">842</td>
+            <td style="padding: 6px 8px; color: #f87171; font-weight: 600;">25</td>
+            <td style="padding: 6px 8px; color: #fbbf24; font-weight: 700;">WARN</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">2MW</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">RSP Systems</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">5</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">5</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">31</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">31</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">0</td>
+            <td style="padding: 6px 8px; color: #4ade80; font-weight: 700;">PASS</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">2MW</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">CBRE IT System</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">5</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">3</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">22</td>
+            <td style="padding: 6px 8px; color: #f87171; font-weight: 600;">14</td>
+            <td style="padding: 6px 8px; color: rgba(255,255,255,0.7);">0</td>
+            <td style="padding: 6px 8px; color: #f87171; font-weight: 700;">FAIL</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="block-detail" style="margin-top: 12px; text-align: left;">
+      "Expected" = counts from raw Armis CSV after filtering. Device count catches missing devices; CVE count catches dropped vulnerabilities per device. Gap between CSV and Armis UI is an Armis issue, not Outcome.
+    </div>
+  </div>
+
+  <div class="connector">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="vline" style="height: 16px;"></div>
+      <div class="pass-label">ALL PASS</div>
+      <div class="vline" style="height: 16px;"></div>
+    </div>
+  </div>
+
+  <!-- DELIVERY SECTION -->
+  <div class="section-label">DELIVERY</div>
+
+  <div class="data-row">
+    <div class="block-blue">
+      <div class="block-title" style="font-size: 16px;">Smartsheet</div>
+      <div class="block-desc" style="font-size: 12px;">Primary delivery — vendor workbooks pushed directly to CBRE's Smartsheet workspace per building.</div>
+      <div class="block-detail">2 sheets per vendor (Device-Vuln Map + CVE Summary).<br>Full site run = up to 38 sheets (19 vendors x 2).</div>
+    </div>
+    <div class="block-blue">
+      <div class="block-title" style="font-size: 16px;">Excel via Email</div>
+      <div class="block-desc" style="font-size: 12px;">Fallback delivery — .xlsx workbooks emailed to Bhruti if Smartsheet is unavailable.</div>
+      <div class="block-detail">Same 2-tab format per vendor.<br>Named: <span class="code">{Vendor}-{Category}_{Building}.xlsx</span></div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="vline-long" style="height: 50px;"></div></div>
+
+  <!-- LAYER 2: CADENCE MONITOR -->
+  <div class="section-label">LAYER 2 — CADENCE MONITOR (BACKGROUND)</div>
+
+  <div class="block-amber">
+    <div class="layer-tag-amber">LAYER 2</div>
+    <div class="block-title" style="font-size: 16px;">Input Cadence Monitor</div>
+    <div class="block-desc" style="font-size: 12px;">Background process — tracks whether all 15 buildings' reports arrive on schedule each week.</div>
+    <div class="checklist" style="max-width: 440px;">
+      <div class="check-item" style="color: rgba(251,191,36,0.7);"><div class="check-box" style="border-color: rgba(251,191,36,0.5);"></div>Log every received report (Site value + timestamp) to MongoDB</div>
+      <div class="check-item" style="color: rgba(251,191,36,0.7);"><div class="check-box" style="border-color: rgba(251,191,36,0.5);"></div>Compare received vs. expected buildings each week</div>
+      <div class="check-item" style="color: rgba(251,191,36,0.7);"><div class="check-box" style="border-color: rgba(251,191,36,0.5);"></div>Detect drift from normal arrival window</div>
+      <div class="check-item" style="color: rgba(251,191,36,0.7);"><div class="check-box" style="border-color: rgba(251,191,36,0.5);"></div>Alert if a building's report is missing or late</div>
+    </div>
+    <div class="block-now">
+      <div><span class="label-now">Now:</span> <span class="text">No monitoring. Only know 2MW schedule (weekly, Monday mornings).</span></div>
+      <div><span class="label-target">Target:</span> <span class="text">Automated tracking after Batch 1 is stable. Requires 2-3 weeks of baseline data per building.</span></div>
+    </div>
+  </div>
+
+  <div style="height: 50px;"></div>
+
+  <!-- Build priority footer -->
+  <div class="section-label">BUILD PRIORITY</div>
+
+  <div style="display: flex; gap: 16px;">
+    <div style="flex: 1; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 10px; padding: 18px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 700; color: #f87171; letter-spacing: 1px; margin-bottom: 4px;">CRITICAL</div>
+      <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Layer 3</div>
+      <div style="font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px;">Before rollout begins.<br>Current bugs fixed + validation automated.</div>
+    </div>
+    <div style="flex: 1; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 10px; padding: 18px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 700; color: #fbbf24; letter-spacing: 1px; margin-bottom: 4px;">HIGH</div>
+      <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Layer 1</div>
+      <div style="font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px;">Before Batch 1 go-live.<br>Catch schema deviations across buildings.</div>
+    </div>
+    <div style="flex: 1; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 10px; padding: 18px 20px; text-align: center;">
+      <div style="font-size: 11px; font-weight: 700; color: #4ade80; letter-spacing: 1px; margin-bottom: 4px;">MEDIUM</div>
+      <div style="font-size: 14px; font-weight: 700; color: #ffffff;">Layer 2</div>
+      <div style="font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px;">After Batch 1 is stable.<br>Requires baseline data per building.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

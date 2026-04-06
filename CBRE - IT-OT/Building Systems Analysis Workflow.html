@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBRE IT/OT — Building Systems Analysis Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .diagram {
+    width: 1020px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .section-label {
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 28px;
+    width: 100%;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+  }
+  .box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 200px;
+    max-width: 310px;
+    flex: 1;
+  }
+  .box h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .box p {
+    font-size: 11.5px;
+    font-weight: 400;
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+  .wide { min-width: 420px; max-width: 560px; }
+  code { background: #ffffff22; padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+  .trigger { background: #1a5c3a; color: #fff; }
+  .input { background: #1b3a5c; color: #fff; }
+  .process { background: #2c4a6e; color: #fff; }
+  .output { background: #3a3a3a; color: #fff; }
+  .delivery { background: #5c3a1b; color: #fff; }
+  .file-list {
+    margin-top: 6px;
+    text-align: left;
+    font-size: 10.5px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+  .connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 100%;
+  }
+  .connector-single { width: 2px; height: 28px; background: #555; }
+  .connector-merge {
+    position: relative;
+    width: 500px;
+    height: 28px;
+  }
+  .connector-merge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2 {
+    position: relative;
+    width: 480px;
+    height: 28px;
+  }
+  .connector-split-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+  .connector-split-3 {
+    position: relative;
+    width: 700px;
+    height: 28px;
+  }
+  .connector-split-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    width: 70%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+  .risk-table {
+    margin-top: 8px;
+    width: 100%;
+    font-size: 10.5px;
+    text-align: left;
+  }
+  .risk-table td {
+    padding: 2px 8px;
+    border-bottom: 1px solid #ffffff15;
+  }
+  .crit { color: #ff4d4d; font-weight: 600; }
+  .high { color: #ff8c42; font-weight: 600; }
+  .med { color: #f5d623; font-weight: 600; }
+  .low { color: #7ab8ff; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <div class="title">CBRE IT/OT — Building Systems Analysis</div>
+  <div class="subtitle">Site-level OT risk summary report with device and vulnerability counts by severity</div>
+
+  <div class="section-label">Trigger</div>
+  <div class="row">
+    <div class="box trigger" style="max-width: 280px;">
+      <h3>New Building Onboarding</h3>
+      <p>CBRE onboards a property to IT/OT monitoring. First Armis scan triggers initial report generation.</p>
+    </div>
+    <div class="box trigger" style="max-width: 280px;">
+      <h3>Periodic Data Sync</h3>
+      <p>Armis API data refreshes on schedule. Updated device/vulnerability data triggers report regeneration.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge"></div></div>
+
+  <div class="section-label">Inputs — Multi-Source Building Data</div>
+  <div class="row">
+    <div class="box input">
+      <h3>Armis API</h3>
+      <p>Primary data source</p>
+      <div class="file-list">
+        Devices &bull; Vulnerabilities<br>
+        Risk Factors &bull; Applications<br>
+        Operating Systems &bull; Connections<br>
+        Users &bull; Activities<br>
+        Source: <code>brookfieldproperties.armis.com</code>
+      </div>
+    </div>
+    <div class="box input">
+      <h3>OT Inventory</h3>
+      <p>Supplemental building data</p>
+      <div class="file-list">
+        <code>2MW_OT Inventory list.csv</code><br>
+        <code>2MW OT Systems.xlsx</code><br>
+        <code>2MW OT Security Risk.csv</code><br>
+        AP Spend data (Yardi)
+      </div>
+    </div>
+    <div class="box input">
+      <h3>Building Context</h3>
+      <p>Property metadata</p>
+      <div class="file-list">
+        Tenant lists &bull; Contact lists<br>
+        Critical dates<br>
+        Reader activity reports<br>
+        Rent data
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge" style="width: 700px;"></div></div>
+
+  <div class="section-label">Transformation</div>
+  <div class="row">
+    <div class="box process wide">
+      <h3>Ingest &amp; Normalize</h3>
+      <p>Pull data from Armis API + file uploads into Outcome data grid. Normalize site location fields (split <code>US_NY_NY_395NinthAve</code> into Country / State / City). Merge with OT inventory and building context data.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box process wide">
+      <h3>Classify &amp; Assess Risk</h3>
+      <p>Classify devices into OT building categories (BMS, Access Control, Surveillance, Elevators, Lighting, Metering, etc.). Calculate vulnerability counts by severity level (Critical / High / Medium / Low). Compute total assets and percentage distribution per risk category.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box process wide">
+      <h3>Generate Report &amp; Apply Formatting</h3>
+      <p>Build HTML report with color-coded risk tables. Apply Bhruti's color-coding rules for severity thresholds. Add columns for total assets and % of assets per risk category. Generate downloadable PDF version.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-2"></div></div>
+
+  <div class="section-label">Output — Per Building</div>
+  <div class="row">
+    <div class="box output" style="max-width: 400px;">
+      <h3>Building Systems Report</h3>
+      <p>Site-level risk summary</p>
+      <div class="file-list">
+        Format: <code>HTML</code> + <code>PDF</code> download<br><br>
+        <table class="risk-table">
+          <tr><td>OT Category</td><td>Devices</td><td><span class="crit">Crit</span></td><td><span class="high">High</span></td><td><span class="med">Med</span></td><td><span class="low">Low</span></td></tr>
+          <tr><td>BMS</td><td>142</td><td class="crit">3</td><td class="high">12</td><td class="med">28</td><td class="low">44</td></tr>
+          <tr><td>Access Control</td><td>87</td><td class="crit">0</td><td class="high">5</td><td class="med">15</td><td class="low">22</td></tr>
+          <tr><td>Surveillance</td><td>64</td><td class="crit">1</td><td class="high">8</td><td class="med">11</td><td class="low">19</td></tr>
+        </table>
+        <br>
+        <em style="opacity: 0.6;">Example data — actual values from Armis scan</em>
+      </div>
+    </div>
+    <div class="box delivery" style="max-width: 280px;">
+      <h3>Delivery</h3>
+      <p>Report emailed to CBRE IT/OT stakeholders with color-coded executive summary. Also accessible via Outcome Product dashboard.</p>
+      <div class="file-list" style="margin-top: 10px;">
+        <strong style="color: #4ae68a;">Sample reports:</strong><br>
+        <code>NEW-2MW Building Systems Report.jpg</code><br>
+        <code>250VeseySt Report Example.jpg</code>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 28px; width: 100%; border-top: 1px solid #333; padding-top: 20px;">
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Data Sources</strong><br><br>
+        Armis (primary) + Willow + Yardi<br>
+        Synced via n8n to S3:<br>
+        <code>cbre/armis-data/</code>
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Value</strong><br><br>
+        Fast executive review of OT security posture per building.<br>
+        <strong style="color: #fff;">Time savings + Revenue unlock</strong><br>
+        <strong style="color: #fff;">$3,000/building</strong>
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Status</strong><br><br>
+        Complete for 2MW (Two Manhattan West).<br>
+        <strong style="color: #4ae68a;">Awaiting client signoff.</strong><br>
+        Demo ready for April 13.
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

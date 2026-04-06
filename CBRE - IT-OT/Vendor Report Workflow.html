@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBRE IT/OT — Vendor Report Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .diagram {
+    width: 1020px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .section-label {
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 28px;
+    width: 100%;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+  }
+  .box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 200px;
+    max-width: 310px;
+    flex: 1;
+  }
+  .box h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .box p {
+    font-size: 11.5px;
+    font-weight: 400;
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+  .wide { min-width: 420px; max-width: 560px; }
+  code { background: #ffffff22; padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+  .trigger { background: #1a5c3a; color: #fff; }
+  .input { background: #1b3a5c; color: #fff; }
+  .process { background: #2c4a6e; color: #fff; }
+  .output { background: #3a3a3a; color: #fff; }
+  .delivery { background: #5c3a1b; color: #fff; }
+  .file-list {
+    margin-top: 6px;
+    text-align: left;
+    font-size: 10.5px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+  .connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 100%;
+  }
+  .connector-single { width: 2px; height: 28px; background: #555; }
+  .connector-merge {
+    position: relative;
+    width: 500px;
+    height: 28px;
+  }
+  .connector-merge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2 {
+    position: relative;
+    width: 480px;
+    height: 28px;
+  }
+  .connector-split-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+  .vendor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    margin-top: 8px;
+    font-size: 10.5px;
+    text-align: left;
+    opacity: 0.85;
+  }
+  .vendor-grid span { padding: 2px 0; }
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <div class="title">CBRE IT/OT — Vendor Report</div>
+  <div class="subtitle">Maps OT applications and vendors across properties — showing which systems are installed at each building</div>
+
+  <div class="section-label">Trigger</div>
+  <div class="row">
+    <div class="box trigger" style="max-width: 280px;">
+      <h3>Armis Data Sync</h3>
+      <p>Scheduled Armis API pull via n8n. Data lands in S3 at <code>cbre/armis-data/</code></p>
+    </div>
+    <div class="box trigger" style="max-width: 280px;">
+      <h3>On-Demand Request</h3>
+      <p>Bhruti or CBRE stakeholder requests updated vendor mapping for a property or portfolio view.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge"></div></div>
+
+  <div class="section-label">Inputs</div>
+  <div class="row">
+    <div class="box input">
+      <h3>Armis API Data</h3>
+      <p>Primary source — device and application inventory from Armis scans</p>
+      <div class="file-list">
+        Applications (name, version, manufacturer)<br>
+        Devices (type, boundary, site)<br>
+        Boundaries (network segments)<br>
+        Source: <code>brookfieldproperties.armis.com</code>
+      </div>
+    </div>
+    <div class="box input">
+      <h3>Vendor-Boundary Mapping</h3>
+      <p>Curated reference data linking vendors to OT categories and boundaries</p>
+      <div class="file-list">
+        Fields: site short, OT building category, vendor, boundary ID, boundary name<br><br>
+        Source: Airtable export (manual curation)<br>
+        Linear: <code>CUS-706</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge"></div></div>
+
+  <div class="section-label">Transformation</div>
+  <div class="row">
+    <div class="box process wide">
+      <h3>Ingest &amp; Extract</h3>
+      <p>Pull Armis JSON from S3. Extract application names, device info, and property/site associations. Parse boundary information for vendor grouping.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box process wide">
+      <h3>OT Classification &amp; Filtering</h3>
+      <p>Filter out non-OT software from raw Armis application lists. Classify remaining applications into OT building categories: Access Control, BMS, Surveillance, Elevators, Lighting, Metering, etc. LLM-assisted classification for ambiguous entries.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box process wide">
+      <h3>Vendor Mapping &amp; Aggregation</h3>
+      <p>Join Armis data with vendor-boundary mapping. Use boundary as the join key to link devices to vendors and OT categories. Handle multi-boundary vendors. Aggregate into hierarchical view: Region &rarr; Property &rarr; OT Category &rarr; Application &rarr; Vendor.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-2"></div></div>
+
+  <div class="section-label">Outputs</div>
+  <div class="row">
+    <div class="box output" style="max-width: 380px;">
+      <h3>Vendor Intelligence Report</h3>
+      <p>Excel artifact — tabular view per property</p>
+      <div class="file-list">
+        Columns: Region, Property, OT Building Category, Application/System, Vendor<br><br>
+        Shows which systems are installed at each building, which vendors support them, and where regional inconsistencies exist.<br><br>
+        <strong>Example OT categories at 2MW:</strong>
+        <div class="vendor-grid">
+          <span>Climatec &mdash; BMS</span>
+          <span>Kastle &mdash; Access Control</span>
+          <span>Kastle &mdash; Surveillance</span>
+          <span>Schindler &mdash; Elevators</span>
+          <span>Lutron &mdash; Lighting</span>
+          <span>RSP Systems &mdash; Metering</span>
+          <span>Utilivisor &mdash; Metering</span>
+          <span>Traxon &mdash; Lighting</span>
+          <span>Morse Watchmans &mdash; Keybox</span>
+        </div>
+      </div>
+    </div>
+    <div class="box output" style="max-width: 280px;">
+      <h3>Planned: Heatmap View</h3>
+      <p>Map-based visualization showing vendor coverage and gaps across the portfolio</p>
+      <div class="file-list">
+        Regional view of which vendors serve which buildings.<br>
+        Highlights inconsistencies and consolidation opportunities.<br><br>
+        Linear: <code>CUS-531</code> (POC — Backlog)
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge"></div></div>
+
+  <div class="section-label">Delivery</div>
+  <div class="row">
+    <div class="box delivery wide">
+      <h3>Delivered to CBRE IT/OT Stakeholders</h3>
+      <p>Excel report shared with Bhruti and IT/OT team. Planned integration into the IT application layer that Sid is building — vendor report becomes a page/link stakeholders can forward directly to vendors.</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 28px; width: 100%; border-top: 1px solid #333; padding-top: 20px;">
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Shared Infrastructure</strong><br><br>
+        Uses same Armis data pipeline and vendor-boundary mapping as Cyber Security Report (<code>CUS-706</code>).<br><br>
+        Per-vendor xlsx files from cyber security output double as vendor report samples.
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Value</strong><br><br>
+        Portfolio-wide visibility into OT vendor landscape. Identifies consolidation opportunities and regional inconsistencies.<br>
+        <strong style="color: #fff;">Time savings</strong>
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Status</strong><br><br>
+        Project: <strong style="color: #f5a623;">Planned</strong><br>
+        Vendor-boundary mapping done (CUS-706).<br>
+        Standalone pipeline not yet built.<br>
+        <strong style="color: #f5a623;">Data Validation phase</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

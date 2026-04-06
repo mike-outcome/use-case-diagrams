@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBRE IT/OT — Cyber Security Report Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .diagram {
+    width: 1020px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .section-label {
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 28px;
+    width: 100%;
+    text-align: center;
+  }
+  .section-label:first-child { margin-top: 0; }
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    position: relative;
+  }
+  .box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 200px;
+    max-width: 310px;
+    flex: 1;
+    position: relative;
+  }
+  .box h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .box p {
+    font-size: 11.5px;
+    font-weight: 400;
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+  .status {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    font-size: 10.5px;
+    line-height: 1.6;
+    text-align: left;
+  }
+  .status .current { color: #f5a623; }
+  .status .ideal { color: #4ae68a; }
+  .status .rollout { color: #7ab8ff; }
+  .status strong { font-weight: 600; }
+  .trigger { background: #1a5c3a; color: #fff; }
+  .intake { background: #0d7a3e; color: #fff; min-width: 420px; max-width: 560px; }
+  .input-csv { background: #1b3a5c; color: #fff; }
+  .process { background: #2c4a6e; color: #fff; }
+  .output { background: #3a3a3a; color: #fff; }
+  .delivery { background: #5c3a1b; color: #fff; }
+  .run-type { background: #2a2a2a; border-radius: 8px; padding: 12px 20px; color: #aaa; font-size: 11px; text-align: center; }
+  .connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    position: relative;
+    width: 100%;
+  }
+  .connector-single { width: 2px; height: 28px; background: #555; }
+  .connector-merge {
+    position: relative;
+    width: 500px;
+    height: 28px;
+  }
+  .connector-merge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2 {
+    position: relative;
+    width: 480px;
+    height: 28px;
+  }
+  .connector-split-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+  .connector-split-out {
+    position: relative;
+    width: 560px;
+    height: 28px;
+  }
+  .connector-split-out::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-out::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 18%;
+    width: 64%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <div class="section-label">Trigger</div>
+  <div class="row">
+    <div class="box trigger">
+      <h3>Weekly Automated</h3>
+      <p>Armis scheduled export<br>Every Monday morning</p>
+      <div class="status">
+        <span class="current"><strong>Current:</strong> Sent to Aryan's email (1 building)</span><br>
+        <span class="ideal"><strong>Ideal:</strong> Sent directly to pipeline trigger email</span><br>
+        <span class="rollout"><strong>Rollout:</strong> 15 scheduled exports/week, one per building, all to trigger email</span>
+      </div>
+    </div>
+    <div class="box trigger">
+      <h3>Ad-Hoc On-Demand</h3>
+      <p>Bhruti emails .zip<br>Any time, any building</p>
+      <div class="status">
+        <span class="current"><strong>Current:</strong> Emailed to Aryan, manually triggered</span><br>
+        <span class="ideal"><strong>Ideal:</strong> Emailed to pipeline trigger email, auto-processed</span><br>
+        <span class="rollout"><strong>Rollout:</strong> Same process, pipeline auto-identifies which building from the data</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge"></div></div>
+
+  <div class="row">
+    <div class="box intake">
+      <h3>Email Intake</h3>
+      <p>Receives .zip &rarr; pipeline initiates</p>
+      <div class="status">
+        <span class="current"><strong>Current:</strong> aryanb@outcomelabs.ai (manual handoff)</span><br>
+        <span class="ideal"><strong>Ideal:</strong> cbre_securityreport@mail.outcomelabs.ai (auto)</span><br>
+        <span class="rollout"><strong>Rollout:</strong> CBRE configures Armis for all 15 buildings to send to this address</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="section-label">Input &mdash; Armis Export (.zip)</div>
+  <div class="row">
+    <div class="box intake" style="min-width: 420px; max-width: 560px;">
+      <h3>Extract &amp; Identify</h3>
+      <p>Extract 2 CSVs from .zip<br>Identify building<br>Identify CSV type</p>
+      <div class="status">
+        <span class="current"><strong>Current:</strong> CSV identified by filename keywords (fragile). Building ID not needed (1 building).</span><br>
+        <span class="ideal"><strong>Ideal:</strong> CSV identified by first header value. Building identified via Site column (col 33).</span><br>
+        <span class="rollout"><strong>Rollout:</strong> Schema validation on first report from each new building. Site column values confirmed for all 15.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-2"></div></div>
+
+  <div class="row">
+    <div class="box input-csv">
+      <h3>Vulnerability Report CSV</h3>
+      <p>~2,300 rows per building<br>CVE details, CVSS scores<br>First header: <code style="background:#ffffff22;padding:1px 4px;border-radius:3px;font-size:10px;">ID</code></p>
+    </div>
+    <div class="box input-csv">
+      <h3>Related Devices CSV</h3>
+      <p>~28,600 rows per building<br>Device details, boundaries, risk<br>First header: <code style="background:#ffffff22;padding:1px 4px;border-radius:3px;font-size:10px;">Vulnerability CVE UID</code></p>
+      <div class="status">
+        <span class="rollout"><strong>Rollout:</strong> ~517K input rows/week across 15 buildings</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge"></div></div>
+
+  <div class="section-label">Transformation</div>
+  <div class="row">
+    <div class="box process">
+      <h3>Join &amp; Filter</h3>
+      <p>Join on CVE UID<br>Open CVEs only &bull; Critical / High / Medium<br>60-day remediation window</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box process" style="max-width: 380px;">
+      <h3>Vendor Mapping &amp; Split</h3>
+      <p>Apply boundary map<br>Multi-boundary IP rules &bull; Split by vendor</p>
+      <div class="status">
+        <span class="current"><strong>Current:</strong> Hardcoded in workflow (19 vendors, 38 boundaries for 2MW only)</span><br>
+        <span class="ideal"><strong>Ideal:</strong> External database, per-building maps, auto-updated, Airtable integration</span><br>
+        <span class="rollout"><strong>Rollout:</strong> Each building needs its own vendor-boundary map (largest manual dependency). CBRE provides per building or via Airtable API.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box process">
+      <h3>Build Reports &amp; Store</h3>
+      <p>Build 2 tables per vendor<br>Stored in Outcome Product (tagged by building)<br>Visible as dashboard to client</p>
+      <div class="status">
+        <span class="rollout"><strong>Rollout:</strong> ~129K output rows/week (Tab 1) + ~13.9K CVE rows/week (Tab 2) across 15 buildings</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-out"></div></div>
+
+  <div class="section-label">Output &mdash; Per Vendor</div>
+  <div class="row">
+    <div class="box output" style="max-width: 340px;">
+      <h3>Vendor Workbook</h3>
+      <p>1 file per vendor &bull; 2 tabs each:<br><strong>Tab 1:</strong> Device-Vulnerability Map (20 cols)<br><strong>Tab 2:</strong> CVE Vulnerability Summary (11 cols)<br>Named: <code style="background:#ffffff22;padding:1px 4px;border-radius:3px;font-size:10px;">{Vendor}-{Category}_{Building}.xlsx</code></p>
+    </div>
+    <div class="box delivery" style="max-width: 340px;">
+      <h3>Delivery</h3>
+      <p><strong>Smartsheet API</strong> &mdash; 2 sheets per vendor<br><strong>Excel email</strong> &mdash; fallback<br><strong>Outcome Product</strong> &mdash; internal storage</p>
+      <div class="status">
+        <span class="current"><strong>Current:</strong> Excel emailed to Bhruti. No internal copy stored.</span><br>
+        <span class="ideal"><strong>Ideal:</strong> Smartsheet API push (primary). Internal copy on Outcome Product.</span><br>
+        <span class="rollout"><strong>Rollout:</strong> Up to ~285 Vendor Workbooks/week (~570 Smartsheets). Workspace structure needed for 15 buildings &times; N vendors.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 20px; display: flex; justify-content: center; gap: 24px;">
+    <div class="run-type">
+      <strong style="color: #ccc;">Full Site Run</strong><br>Input contains all vendors &rarr; <strong style="color:#fff;">1 Vendor Workbook per vendor included</strong>
+    </div>
+    <div class="run-type">
+      <strong style="color: #ccc;">Vendor-Specific Run</strong><br>Input contains one vendor &rarr; <strong style="color:#fff;">1 Vendor Workbook</strong>
+    </div>
+  </div>
+
+  <div style="margin-top: 28px; width: 100%; border-top: 1px solid #333; padding-top: 20px;">
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Onboarding Checklist</strong><br>
+        Per building:<br>
+        1. Vendor-boundary map received<br>
+        2. Site column value confirmed<br>
+        3. First report &rarr; schema validation<br>
+        4. Armis delivery configured<br>
+        5. First reports &rarr; Bhruti validates<br>
+        6. Go live
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Rollout Plan</strong><br>
+        Phase 0: Perfect 2MW &rarr; Bhruti sign-off<br>
+        Phase 1: Onboard in batches of 3 buildings<br>
+        Phase 2: All 15 live<br>
+        <br>
+        <strong style="color: #fff;">5 batches &times; 3 buildings = 15 total</strong>
+      </div>
+      <div style="background: #1a2a1a; border: 1px solid #2a4a2a; border-radius: 8px; padding: 14px 20px; color: #aaa; font-size: 11px; text-align: center; max-width: 300px; flex: 1;">
+        <strong style="color: #4ae68a;">Validation at Scale</strong><br>
+        Input: Schema validation per building<br>
+        Output: Input-to-output CSV comparison<br>
+        Monitoring: Alert if a building's report doesn't arrive<br>
+        <br>
+        <strong style="color: #fff;">CSV is the source of truth</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

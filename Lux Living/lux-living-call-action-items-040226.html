@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lux Living — Action Items from 4/2/26 Call</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f5f7;
+    color: #3d4551;
+    padding: 40px 20px;
+    line-height: 1.5;
+  }
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1f36;
+    margin-bottom: 4px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  /* Context banner */
+  .context-banner {
+    background: #1a1f36;
+    color: #e0e7ff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .context-banner strong { color: #fff; }
+  .context-banner .attendees {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #a5b4fc;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 36px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .section-icon.uc1 { background: #4f46e5; }
+  .section-icon.uc2 { background: #0891b2; }
+  .section-icon.dash { background: #7c3aed; }
+  .section-icon.gen { background: #059669; }
+
+  .section-header-text h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1f36;
+  }
+  .section-header-text .section-desc {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 1px;
+  }
+
+  /* Dev changes callout */
+  .dev-changes {
+    background: #fff;
+    border: 2px solid #e0e7ff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .dev-changes-header {
+    background: #eef2ff;
+    padding: 10px 18px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4338ca;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dev-changes-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4f46e5;
+  }
+  .dev-changes-body {
+    padding: 4px 0;
+  }
+
+  /* Action item row */
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 18px;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 14px;
+    font-size: 13px;
+    transition: background 0.1s;
+  }
+  .action-item:last-child { border-bottom: none; }
+  .action-item:hover { background: #fafbfc; }
+
+  .action-item .number {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .dev-changes .action-item .number {
+    background: #eef2ff;
+    color: #4338ca;
+  }
+  .action-item .content {
+    flex: 1;
+  }
+  .action-item .content strong {
+    color: #1a1f36;
+  }
+  .action-item .content .detail {
+    color: #6b7280;
+    margin-top: 3px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .action-item .content code {
+    background: #f3f4f6;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    color: #4f46e5;
+  }
+  .action-item .owner {
+    flex-shrink: 0;
+  }
+
+  /* Owner badge */
+  .owner-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .owner-mike { background: #ecfdf5; color: #059669; }
+  .owner-dev { background: #eef2ff; color: #4338ca; }
+  .owner-aryan { background: #faf5ff; color: #7c3aed; }
+  .owner-liz { background: #fef3c7; color: #b45309; }
+  .owner-group { background: #f3f4f6; color: #6b7280; }
+
+  /* Standard card */
+  .card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .card-body {
+    padding: 4px 0;
+  }
+
+  /* Rename table */
+  .rename-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .rename-table th {
+    text-align: left;
+    padding: 8px 18px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .rename-table td {
+    padding: 8px 18px;
+    border-bottom: 1px solid #f9fafb;
+    color: #374151;
+  }
+  .rename-table tr:last-child td { border-bottom: none; }
+  .rename-table .old {
+    color: #dc2626;
+    text-decoration: line-through;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+  }
+  .rename-table .new {
+    color: #059669;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+  }
+  .rename-table .arrow {
+    color: #9ca3af;
+    text-align: center;
+    font-size: 16px;
+  }
+  .rename-table .where {
+    color: #6b7280;
+    font-size: 12px;
+  }
+
+  /* Color swatch */
+  .color-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 18px;
+  }
+  .color-swatch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .swatch-green { background: #059669; }
+  .swatch-yellow { background: #d97706; }
+  .swatch-red { background: #dc2626; }
+
+  /* Employer logic */
+  .logic-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 14px 18px;
+    flex-wrap: wrap;
+  }
+  .logic-node {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #374151;
+    text-align: center;
+    min-width: 130px;
+    flex: 1;
+  }
+  .logic-node strong {
+    display: block;
+    font-size: 13px;
+    color: #1a1f36;
+    margin-bottom: 2px;
+  }
+  .logic-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    color: #9ca3af;
+    font-size: 18px;
+  }
+
+  /* Key decision box */
+  .decision-box {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin: 10px 18px 14px;
+    font-size: 12px;
+    color: #92400e;
+    line-height: 1.6;
+  }
+  .decision-box strong { color: #b45309; }
+
+  /* Separator */
+  .sep {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 4px 18px;
+  }
+
+  /* Footnote */
+  .footnote {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.6;
+  }
+  .footnote strong { color: #6b7280; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Lux Living — Other Action Items from 4/2 Call</h1>
+    <div class="subtitle">Outcome x Luxury Living Monthly Implementation Update &middot; April 2, 2026</div>
+  </div>
+
+  <!-- ═══════════════════ UC1 ═══════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon uc1">1</div>
+      <div class="section-header-text">
+        <h2>Use Case 1 — Lease to Database Comparison</h2>
+        <div class="section-desc">Focus: fix intake failures, QA all properties, restore trust</div>
+      </div>
+    </div>
+
+    <!-- Dev changes for UC1 -->
+    <div class="dev-changes">
+      <div class="dev-changes-header"><span class="dot"></span> Dev Team Changes</div>
+      <div class="dev-changes-body">
+        <div class="action-item">
+          <div class="number">1</div>
+          <div class="content">
+            <strong>Rename labels in UC1 comparison output email</strong>
+            <div class="detail">End users don't know what "PDF", "API", or "DB" mean. Rename across all sections:</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+      </div>
+      <table class="rename-table">
+        <thead>
+          <tr>
+            <th>Current Label</th>
+            <th></th>
+            <th>New Label</th>
+            <th>Where (Section &rarr; Element)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="old">PDF Value</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Lease</span></td>
+            <td class="where"><strong>Mismatched Fields</strong> &rarr; column header</td>
+          </tr>
+          <tr>
+            <td><span class="old">API Value</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Ascent Database</span></td>
+            <td class="where"><strong>Mismatched Fields</strong> &rarr; column header</td>
+          </tr>
+          <tr>
+            <td><span class="old">PDF</span> <span style="font-size:11px;color:#9ca3af;">(badge)</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Lease</span></td>
+            <td class="where"><strong>Missing Fields</strong> &rarr; "Missing From" badge</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="dev-changes-body">
+        <div class="action-item">
+          <div class="number">2</div>
+          <div class="content">
+            <strong>Make confidence scores more visually prominent</strong>
+            <div class="detail">Color-coded badges already exist but are small. Make them larger and more distinct so property teams can quick-scan. Liz prefers red / yellow / green over subtle text. Colors: <span style="color:#059669;font-weight:600;">green 95%+</span>, <span style="color:#d97706;font-weight:600;">yellow 70-94%</span>, <span style="color:#dc2626;font-weight:600;">red &lt;70%</span>.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dev change: bold ascent link + deep link to lease -->
+    <div class="dev-changes">
+      <div class="dev-changes-header"><span class="dot"></span> Dev Team Changes (continued)</div>
+      <div class="dev-changes-body">
+        <div class="action-item">
+          <div class="number">3</div>
+          <div class="content">
+            <strong>Make the Ascent link more prominent in comparison email</strong>
+            <div class="detail">Currently plain text, centered, minimal styling — Liz said it "looks like an unsubscribe link." Increase visual weight (bold, larger, possibly a button style). Keep it near the "Needs Review" / Missing Fields section — Stef confirmed that placement so users see it right when they need to act.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">4</div>
+          <div class="content">
+            <strong>Add deep link to the input lease in comparison output email</strong>
+            <div class="detail">When a user sees a mismatch, they need to quickly reference the original lease. The lease is already stored in the Outcome data grid when the input email is received. Add a link in the comparison email that takes the user directly to the specific location in the lease where the field in question appears. Same pattern applies to UC2 with applications (see below).</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="decision-box" style="margin: 4px 18px 8px;">
+          <strong>Note:</strong> This may be a more significant change requested. Assess the development required and let Mike know how much time this will take.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ UC2 ═══════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon uc2">2</div>
+      <div class="section-header-text">
+        <h2>Use Case 2 — Resident Application Comparison</h2>
+        <div class="section-desc">Focus: label changes, employer/industry logic overhaul, link to application</div>
+      </div>
+    </div>
+
+    <!-- Dev changes for UC2 -->
+    <div class="dev-changes">
+      <div class="dev-changes-header"><span class="dot"></span> Dev Team Changes</div>
+      <div class="dev-changes-body">
+        <div class="action-item">
+          <div class="number">1</div>
+          <div class="content">
+            <strong>Rename labels in UC2 comparison output email</strong>
+            <div class="detail">End users don't know what "DB" or "PDF" mean. Rename across all sections:</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+      </div>
+      <table class="rename-table">
+        <thead>
+          <tr>
+            <th>Current Label</th>
+            <th></th>
+            <th>New Label</th>
+            <th>Where (Section &rarr; Element)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="old">DB Value</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Ascent Database</span></td>
+            <td class="where"><strong>Similar Fields</strong> &rarr; column header</td>
+          </tr>
+          <tr>
+            <td><span class="old">DB Value</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Ascent Database</span></td>
+            <td class="where"><strong>Mismatched Fields</strong> &rarr; column header</td>
+          </tr>
+          <tr>
+            <td><span class="old">DB</span> <span style="font-size:11px;color:#9ca3af;">(badge)</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Ascent Database</span></td>
+            <td class="where"><strong>Missing Fields</strong> &rarr; "Missing From" badge</td>
+          </tr>
+          <tr>
+            <td><span class="old">PDF</span> <span style="font-size:11px;color:#9ca3af;">(badge)</span></td>
+            <td class="arrow">&rarr;</td>
+            <td><span class="new">Application</span></td>
+            <td class="where"><strong>Missing Fields</strong> &rarr; "Missing From" badge</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="dev-changes-body">
+        <div class="action-item">
+          <div class="number">2</div>
+          <div class="content">
+            <strong>Implement red / yellow / green confidence scores</strong>
+            <div class="detail">Same spec as UC1 (green 95%+, yellow 70-94%, red &lt;70%). Liz liked the color-coded version over the subtle text-only version.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">3</div>
+          <div class="content">
+            <strong>Bold the Ascent link &amp; keep near "Needs Review"</strong>
+            <div class="detail">Same as UC1. Stef confirmed placement: users scroll through matching &rarr; similar &rarr; mismatch &rarr; needs review, then see the link right when they need to act.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">4</div>
+          <div class="content">
+            <strong>Add deep link to the input application in comparison output email</strong>
+            <div class="detail">Applications are not stored in Ascent — they arrive via the input email and are already stored in the Outcome data grid. When a user sees a mismatch, they need to quickly reference the original application. Add a link in the comparison email that takes them directly to the specific location in the application where the field appears. Same pattern as UC1 deep link to leases (see above).</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">5</div>
+          <div class="content">
+            <strong>Add employer name reference under Employer Industry Structure</strong>
+            <div class="detail">Currently shows only "Corporation" / "Inc." without context. Add a line showing the actual employer name (e.g., "Saiton") so the field isn't confusing in isolation.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employer / Industry logic overhaul -->
+    <div class="dev-changes">
+      <div class="dev-changes-header"><span class="dot"></span> Dev Team Changes — Employer &amp; Industry Logic</div>
+      <div class="dev-changes-body">
+        <div class="action-item">
+          <div class="number">6</div>
+          <div class="content">
+            <strong>Industry field: do NOT compare to application</strong>
+            <div class="detail">Self-reported industry on applications is unreliable — residents report their position, not the company's actual industry. Industry should be determined by external scrape (Google, LinkedIn, company website), not application comparison.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">7</div>
+          <div class="content">
+            <strong>DBA / Alt Names: do NOT compare to application</strong>
+            <div class="detail">DBA and alt names are contextual database entries for humans and AI learning. Residents never write DBAs on applications. No meaningful comparison is possible — remove from the application-vs-database comparison output.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">8</div>
+          <div class="content">
+            <strong>Employer name handling: implement 4-bucket logic</strong>
+            <div class="detail">When processing the employer name from an application, route through this decision tree:</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-dev">Dev Team</span></div>
+        </div>
+      </div>
+      <!-- Employer logic flow -->
+      <div class="logic-flow">
+        <div class="logic-node"><strong>1. Existing Match</strong>Employer exists in Ascent as-is</div>
+        <div class="logic-arrow">/</div>
+        <div class="logic-node"><strong>2. Known DBA</strong>Found under DBA / alt names in Ascent</div>
+        <div class="logic-arrow">/</div>
+        <div class="logic-node"><strong>3. New + Scrape</strong>Not in Ascent &mdash; do web scrape, attach confidence score for official name</div>
+        <div class="logic-arrow">/</div>
+        <div class="logic-node"><strong>4. Flag Unknown</strong>New employer, scrape inconclusive &mdash; flag for manual review</div>
+      </div>
+      <div class="decision-box">
+        <strong>Context from Liz:</strong> The DBA/alt names database exists so that when someone writes "Northwestern Psychology Department," the system (or a human) can match it to "Northwestern University." QuickBase already sends Liz a notification when a new/unrecognized employer appears so she can manually verify and add it. The scrape step would automate her current Google-hunt process.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════ Dashboard ═══════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon dash">D</div>
+      <div class="section-header-text">
+        <h2>Dashboard — Confidence &amp; Accuracy Scores</h2>
+        <div class="section-desc">Deprioritized by mutual agreement</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="action-item">
+          <div class="number">1</div>
+          <div class="content">
+            <strong>Dashboard deprioritized</strong>
+            <div class="detail">Stef asked Liz directly: distraction or necessity? Liz confirmed it can be "back burnered" so the team can focus on getting UC1 and UC2 mechanics working consistently across all properties first. Dashboard comes after the nuts and bolts are functioning.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-group">Agreed</span></div>
+        </div>
+        <div class="action-item">
+          <div class="number">2</div>
+          <div class="content">
+            <strong>Provide dashboard timeline</strong>
+            <div class="detail">Aryan to develop and communicate a timeline for dashboard completion offline. Not urgent, but needs a date on it.</div>
+          </div>
+          <div class="owner"><span class="owner-badge owner-aryan">Aryan</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footnote -->
+  <div class="footnote">
+    <strong>Source:</strong> Gemini-generated meeting notes from "Outcome x Luxury Living — Monthly Implementation Update" (April 2, 2026, 11:01 CDT).<br>
+    <strong>Attendees:</strong> Mike McGugan, Liz Chartrand, Stef Goldberg, Aryan Basak, Matt Ernst.
+  </div>
+
+</div>
+</body>
+</html>

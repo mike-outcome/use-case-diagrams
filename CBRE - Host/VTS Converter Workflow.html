@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBRE Host — VTS Converter (Angus to VTS Activate) Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .diagram {
+    width: 1080px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .section-label {
+    color: #888;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 28px;
+    width: 100%;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    position: relative;
+  }
+  .box {
+    border-radius: 10px;
+    padding: 14px 18px;
+    text-align: center;
+    min-width: 180px;
+    max-width: 310px;
+    flex: 1;
+    position: relative;
+  }
+  .box h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .box p {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.85;
+    line-height: 1.4;
+  }
+  .wide { min-width: 420px; max-width: 600px; }
+  .full { min-width: 700px; max-width: 900px; }
+  code { background: #ffffff22; padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+  .trigger { background: #1a5c3a; color: #fff; }
+  .input { background: #1b3a5c; color: #fff; }
+  .reference { background: #2a2a4a; color: #fff; border: 1px dashed #5555aa; }
+  .stage1 { background: #2c4a6e; color: #fff; }
+  .stage2 { background: #3a2a5c; color: #fff; }
+  .stage3 { background: #5c4a2a; color: #fff; }
+  .output { background: #3a3a3a; color: #fff; }
+  .validation { background: #5c3a3a; color: #fff; }
+  .delivery { background: #5c3a1b; color: #fff; }
+  .dictionary { background: #1a3a2a; color: #fff; border: 1px dashed #4ae68a; }
+  .file-list {
+    margin-top: 6px;
+    text-align: left;
+    font-size: 10.5px;
+    opacity: 0.8;
+    line-height: 1.6;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .tag-optional { background: #ffffff22; color: #aaa; }
+  .tag-required { background: #1a5c3a44; color: #4ae68a; }
+  .connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 100%;
+  }
+  .connector-single { width: 2px; height: 28px; background: #555; }
+
+  .connector-split-2 {
+    position: relative;
+    width: 480px;
+    height: 28px;
+  }
+  .connector-split-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+
+  .connector-merge-2 {
+    position: relative;
+    width: 480px;
+    height: 28px;
+  }
+  .connector-merge-2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 22%;
+    width: 56%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge-2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+
+  .connector-split-4 {
+    position: relative;
+    width: 900px;
+    height: 28px;
+  }
+  .connector-split-4::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+  .connector-split-4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+    border-top: 2px solid #555;
+  }
+
+  .connector-merge-4 {
+    position: relative;
+    width: 900px;
+    height: 28px;
+  }
+  .connector-merge-4::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    width: 80%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge-4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+
+  .connector-merge-3 {
+    position: relative;
+    width: 700px;
+    height: 28px;
+  }
+  .connector-merge-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    width: 70%;
+    height: 14px;
+    border-left: 2px solid #555;
+    border-right: 2px solid #555;
+  }
+  .connector-merge-3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: #555;
+  }
+
+  .ct-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .ct-tab {
+    background: #ffffff15;
+    border: 1px solid #ffffff22;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 9.5px;
+    color: #ccc;
+    white-space: nowrap;
+  }
+
+  .stage-header {
+    color: #888;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    margin-top: 24px;
+    width: 100%;
+    text-align: center;
+  }
+  .stage-num {
+    color: #fff;
+    background: #ffffff22;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin-right: 6px;
+    font-size: 9px;
+  }
+
+  .folder-structure {
+    text-align: left;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    color: #aaa;
+    line-height: 1.8;
+    margin-top: 8px;
+  }
+  .folder-structure .dir { color: #4ae68a; }
+  .folder-structure .file { color: #ccc; }
+
+  .version-badge {
+    display: inline-block;
+    font-size: 9px;
+    background: #5c3a1b;
+    color: #f5a623;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="diagram">
+
+  <div class="title">CBRE Host — VTS Converter</div>
+  <div class="subtitle">Angus to VTS Activate Full Migration Automation</div>
+
+  <!-- ─── TRIGGER ─── -->
+  <div class="section-label">Trigger</div>
+  <div class="row">
+    <div class="box trigger wide">
+      <h3>Building Migration Request</h3>
+      <p>CBRE submits 7 Angus export files for a building to be migrated from Angus to VTS Activate. Processed building-by-building.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <!-- ─── INPUTS ─── -->
+  <div class="section-label">Inputs — 7 Angus Exports (per building)</div>
+  <div class="row">
+    <div class="box input">
+      <h3>Equipment &amp; Schedules</h3>
+      <div class="file-list">
+        <code>PMSetup1.xlsx</code> — Equipment + schedule linkage <span class="tag tag-required">Req</span><br>
+        <code>ScheduleListPM.xlsx</code> — PM schedule details (3-sheet report) <span class="tag tag-required">Req</span>
+      </div>
+    </div>
+    <div class="box input">
+      <h3>Tasks &amp; Steps</h3>
+      <div class="file-list">
+        <code>PMSetup2.xlsx</code> — Tasks + steps expanded (one row per step) <span class="tag tag-required">Req</span>
+      </div>
+    </div>
+    <div class="box input">
+      <h3>Work Orders &amp; Users</h3>
+      <div class="file-list">
+        <code>WOListTR.xlsx</code> — Historical work orders / SRs <span class="tag tag-required">Req</span><br>
+        <code>PoolList.xlsx</code> — Team/user roster (names, emails, roles) <span class="tag tag-required">Req</span>
+      </div>
+    </div>
+    <div class="box input">
+      <h3>Optional Data</h3>
+      <div class="file-list">
+        <code>ServiceSchedules.xlsx</code> — Billable products &amp; services <span class="tag tag-optional">Opt</span><br>
+        <code>PMGaugeReadings.xlsx</code> — Equipment meter readings <span class="tag tag-optional">Opt</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge-4"></div></div>
+
+  <!-- ─── REFERENCE DATA ─── -->
+  <div class="row">
+    <div class="box reference full">
+      <h3>Reference Data (provided once)</h3>
+      <p>AMF template <span class="version-badge">v.2024-12</span> &nbsp;|&nbsp; Channel Template (blank) <span class="version-badge">v1.2.0</span> &nbsp;|&nbsp; 3 completed AMFs (training dictionary) &nbsp;|&nbsp; VTS predefined categories, status codes, equipment classes &nbsp;|&nbsp; Implementation Playbook</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <!-- ═══ OUTCOME AUTOMATION PIPELINE ═══ -->
+  <div class="section-label" style="border: 1px solid #333; border-radius: 6px; padding: 6px 16px; background: #1a1a1a;">Outcome Automation Pipeline</div>
+
+  <!-- ─── STAGE 1 ─── -->
+  <div class="stage-header"><span class="stage-num">1</span> AMF Population</div>
+  <div class="row">
+    <div class="box stage1 wide">
+      <h3>Parse Exports &amp; Apply Column Offsets</h3>
+      <p>Ingest 7 xlsx files. Handle blank col A offsets (PMSetup1/2, PoolList), ScheduleListPM 3-sheet layout (Sheet3, skip rows 1-15), and WOListTR direct copy. Validate schemas and required columns.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box stage1">
+      <h3>Populate AMF Tabs</h3>
+      <p>Fill 8 data tabs in processing order. Pools List runs first (builds name-to-email lookup used by all other tabs).</p>
+      <div class="ct-tabs">
+        <span class="ct-tab">(OPT)Pools List</span>
+        <span class="ct-tab">PMSetupEquipSched</span>
+        <span class="ct-tab">PMScheduleList</span>
+        <span class="ct-tab">PMSetupTasksSteps</span>
+        <span class="ct-tab">WOListTR</span>
+        <span class="ct-tab">DelAngus-VTS</span>
+        <span class="ct-tab">(opt)ServiceSchedules</span>
+        <span class="ct-tab">(opt)PMGaugeReadings</span>
+      </div>
+    </div>
+    <div class="box stage1">
+      <h3>Extract DelAngus-VTS Values &amp; Auto-Map</h3>
+      <p>Extract unique Angus values across 5 mapping sections (Equipment Category, Equipment Location, SR Location, SR Types, Products vs Services). Auto-map using confidence tiers from training dictionary.</p>
+      <div class="ct-tabs">
+        <span class="ct-tab" style="border-color: #4ae68a55; color: #4ae68a;">Tier 1: Exact</span>
+        <span class="ct-tab" style="border-color: #f5a62355; color: #f5a623;">Tier 2: Fuzzy</span>
+        <span class="ct-tab" style="border-color: #ff555555; color: #ff5555;">Tier 3: Manual</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <!-- ─── STAGE 2 ─── -->
+  <div class="stage-header"><span class="stage-num">2</span> Channel Template Generation</div>
+  <div class="row">
+    <div class="box stage2 wide">
+      <h3>Replicate VTS Super Converter</h3>
+      <p>Transform populated AMF data into Channel Template format. Deduplicate equipment, resolve assignee emails, convert date/time formats, map recurrence periods, split SR Category+Issue, concatenate task steps, and compute all formula-dependent values directly.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <div class="row">
+    <div class="box stage2 full">
+      <h3>Channel Template Tabs Generated</h3>
+      <p>11 data tabs populated from AMF + DelAngus-VTS mappings</p>
+      <div class="ct-tabs">
+        <span class="ct-tab">Teams</span>
+        <span class="ct-tab">Users</span>
+        <span class="ct-tab">Locations</span>
+        <span class="ct-tab">Equipment List</span>
+        <span class="ct-tab">PM Schedules List</span>
+        <span class="ct-tab">ServiceRequestImports</span>
+        <span class="ct-tab">TasksImports</span>
+        <span class="ct-tab">ScheduleEquipment Linking</span>
+        <span class="ct-tab">VTS Equipment Mapping</span>
+        <span class="ct-tab">UserImport</span>
+        <span class="ct-tab">Auto Assignment</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-single"></div></div>
+
+  <!-- ─── STAGE 3 ─── -->
+  <div class="stage-header"><span class="stage-num">3</span> Validation &amp; Output</div>
+  <div class="row">
+    <div class="box stage3 wide">
+      <h3>Validate Against Known-Good Outputs</h3>
+      <p>Run pre-delivery checks: required fields, row counts (AMF vs export, CT vs unique IDs), assignee resolution, equipment class coverage, recurrence mapping, date formats, schedule ID cross-refs, SR category/issue coverage. Compare against completed reference files.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-2"></div></div>
+
+  <div class="row">
+    <div class="box stage3">
+      <h3>Split CSVs &gt; 300 Rows</h3>
+      <p>Check each CT tab for VTS importer 300-row limit. Produce split files with headers: <code>{Tab}_part1.csv</code>, <code>{Tab}_part2.csv</code>, etc. Primary candidate: ServiceRequestImports (WOListTR can have 6,000+ rows).</p>
+    </div>
+    <div class="box stage3">
+      <h3>Generate Validation Report</h3>
+      <p>Standalone file (not in the Channel Template). Lists each issue with CT tab, row, column, what's wrong, and action needed. CBRE works through flagged items in the CT before sending to VTS.</p>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge-2"></div></div>
+
+  <!-- ─── OUTPUTS ─── -->
+  <div class="section-label">Outputs — Per Building</div>
+  <div class="row">
+    <div class="box output">
+      <h3>Populated AMF</h3>
+      <p>All data tabs filled<br>1 per building</p>
+      <div class="file-list">
+        <code>AMF_{Building}.xlsx</code>
+      </div>
+    </div>
+    <div class="box output">
+      <h3>Channel Template</h3>
+      <p>VTS import-ready<br>1 per building</p>
+      <div class="file-list">
+        <code>ChannelTemplate_{Building}.xlsx</code>
+      </div>
+    </div>
+    <div class="box output">
+      <h3>Split CSVs</h3>
+      <p>For tabs exceeding 300-row VTS limit</p>
+      <div class="file-list">
+        <code>{Tab}_part1.csv</code><br>
+        <code>{Tab}_part2.csv</code> ...
+      </div>
+    </div>
+    <div class="box validation">
+      <h3>Validation Report</h3>
+      <p>Standalone issue list with CT locations &amp; actions needed</p>
+      <div class="file-list">
+        <code>ValidationReport_{Building}.txt</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-merge-4"></div></div>
+
+  <!-- ─── DELIVERY ─── -->
+  <div class="section-label">Delivery</div>
+  <div class="row">
+    <div class="box delivery wide">
+      <h3>Centralized Folder (per building)</h3>
+      <p>All output files deposited into a shared folder accessible by both CBRE (for review) and VTS (for direct pickup and import).</p>
+      <div class="folder-structure">
+        <span class="dir">{BuildingName}/</span><br>
+        &nbsp;&nbsp;<span class="file">AMF_{BuildingName}.xlsx</span><br>
+        &nbsp;&nbsp;<span class="file">ChannelTemplate_{BuildingName}.xlsx</span><br>
+        &nbsp;&nbsp;<span class="dir">CSVs/</span> <span style="color:#666;">(split files, if applicable)</span><br>
+        &nbsp;&nbsp;<span class="file">ValidationReport_{BuildingName}.txt</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector"><div class="connector-split-2"></div></div>
+
+  <div class="row">
+    <div class="box delivery">
+      <h3>CBRE Reviews</h3>
+      <p>Opens validation report, works through flagged items directly in the Channel Template before handoff.</p>
+    </div>
+    <div class="box delivery">
+      <h3>VTS Picks Up</h3>
+      <p>Channel Template + split CSVs ready for direct import into VTS Activate via Data Importer. No manual file handoff required.</p>
+    </div>
+  </div>
+
+  <!-- ─── DICTIONARY FEEDBACK LOOP ─── -->
+  <div style="margin-top: 32px; width: 100%; border-top: 1px solid #333; padding-top: 20px;">
+    <div class="row">
+      <div class="box dictionary full">
+        <h3>Auto-Mapping Dictionary (Phase 2 — Continuous Learning)</h3>
+        <p>After each building migration is confirmed by VTS, all verified Angus-to-VTS value mappings are ingested back into the dictionary. Seeded from 3 completed AMFs (Corporate Ridge II, 777 Tower, Dexter). Each successful migration expands coverage, converting future Tier 2/3 mappings into Tier 1 exact matches. Conflicts (same Angus value mapped differently across buildings) are stored with building context and flagged for review.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
